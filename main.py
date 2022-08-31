@@ -149,7 +149,7 @@ class Fudan:
         执行登出并关闭会话
         """
         if exit_code == 1:
-            self.send_email('今日已提交\n')
+            self.send_email('打卡失败，今日已提交过\n')
         else:
             self.send_email('今日打卡成功\n')
         self.logout()
