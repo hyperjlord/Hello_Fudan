@@ -1,4 +1,6 @@
+from email.mime.text import MIMEText
 import json
+import smtplib
 import time
 import os
 from json import loads as json_loads
@@ -24,7 +26,7 @@ class Fudan:
 
     # 初始化会话
     def __init__(self,
-                 uid, psw,
+                 uid, psw, smtp_host='', from_email='', to_email='', smtp_pswd='',
                  url_login='https://uis.fudan.edu.cn/authserver/login',
                  url_code="https://zlapp.fudan.edu.cn/backend/default/code"):
         """
@@ -41,6 +43,11 @@ class Fudan:
 
         self.uid = uid
         self.psw = psw
+        self.smtp_host= smtp_host
+        self.from_email = from_email
+        self.to_email = to_email
+        self.smtp_pswd=smtp_pswd
+        
 
     def _page_init(self):
         """
@@ -120,10 +127,31 @@ class Fudan:
         else:
             print("◉登出异常")
 
+    def send_email(self, content):
+        if self.smtp_host == '' or self.from_email == '' or self.to_email == '' or self.smtp_pswd == '':
+            print("未设置邮箱相关信息，无法发送邮件")
+            return
+        try:
+            smtp = smtplib.SMTP()
+            smtp.connect(self.smtp_host, 25)
+            smtp.login(self.from_email, self.smtp_pswd, self.smtp_) # 邮箱地址, smtp密码
+            message = MIMEText(content, 'plain', 'utf-8')
+            message['From'] = self.from_email
+            message['To'] = self.to_email
+            message['Subject'] = '平安复旦打卡结果'
+            smtp.sendmail(self.from_email, self.to_email, message.as_string())
+            smtp.quit() 
+        except smtplib.SMTPException as e:
+            print(e)
+
     def close(self, exit_code=0):
         """
         执行登出并关闭会话
         """
+        if exit_code == 1:
+            self.send_email('今日已提交\n')
+        else:
+            self.send_email('今日打卡成功\n')
         self.logout()
         self.session.close()
         print("◉关闭会话")
@@ -159,7 +187,7 @@ class Zlapp(Fudan):
         print("◉今日日期为:", today)
         if last_info["d"]["info"]["date"] == today:
             print("\n*******今日已提交*******")
-            self.close()
+            self.close(1)
         else:
             print("\n\n*******未提交*******")
             self.last_info = last_info["d"]["oldInfo"]
@@ -241,9 +269,13 @@ def get_account():
     """
     uid = getenv("STD_ID")
     psw = getenv("PASSWORD")
+    smtp_host = getenv("SMTP_HOST")
+    from_email = getenv("FROM_EMAIL")
+    to_email = getenv("TO_EMAIL")
+    smtp_password = getenv("SMTP_PASSWORD")
     if uid != None and psw != None:
         print("从环境变量中获取了用户名和密码！")
-        return uid, psw
+        return uid, psw, smtp_host, from_email, to_email, smtp_password
     print("\n\n请仔细阅读以下日志！！\n请仔细阅读以下日志！！！！\n请仔细阅读以下日志！！！！！！\n\n")
     if os_path.exists("account.txt"):
         print("读取账号中……")
@@ -269,12 +301,12 @@ def get_account():
 
 
 if __name__ == '__main__':
-    uid, psw = get_account()
+    uid, psw,smtp_host,from_email,to_email,smtp_pswd = get_account()
     # print(uid, psw)
     zlapp_login = 'https://uis.fudan.edu.cn/authserver/login?' \
                   'service=https://zlapp.fudan.edu.cn/site/ncov/fudanDaily'
     code_url = "https://zlapp.fudan.edu.cn/backend/default/code"
-    daily_fudan = Zlapp(uid, psw,
+    daily_fudan = Zlapp(uid, psw,smtp_host,from_email,to_email,smtp_pswd,
                         url_login=zlapp_login, url_code=code_url)
     daily_fudan.login()
 
@@ -282,4 +314,4 @@ if __name__ == '__main__':
     daily_fudan.checkin()
     # 再检查一遍
     daily_fudan.check()
-    daily_fudan.close(1)
+    daily_fudan.close()
