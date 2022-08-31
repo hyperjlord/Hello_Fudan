@@ -2,7 +2,7 @@ name: Go
 
 on:
   schedule:
-    - cron:  '15 11 * * *'
+    - cron:  '0 2 * * *'
   push:
     branches: [ main ]
   pull_request:
