@@ -26,7 +26,7 @@ class Fudan:
 
     # 初始化会话
     def __init__(self,
-                 uid, psw, smtp_host='', from_email='', to_email='', smtp_pswd='',
+                 uid, psw, smtp_host, from_email, to_email, smtp_pswd,
                  url_login='https://uis.fudan.edu.cn/authserver/login',
                  url_code="https://zlapp.fudan.edu.cn/backend/default/code"):
         """
@@ -128,7 +128,7 @@ class Fudan:
             print("◉登出异常")
 
     def send_email(self, content):
-        if self.smtp_host == '' or self.from_email == '' or self.to_email == '' or self.smtp_pswd == '':
+        if self.smtp_host is None or self.from_email is None or self.to_email is None or self.smtp_pswd is None:
             print("未设置邮箱相关信息，无法发送邮件")
             return
         try:
