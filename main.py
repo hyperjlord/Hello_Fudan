@@ -3,6 +3,7 @@ import json
 import smtplib
 import time
 import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 from json import loads as json_loads
 from os import path as os_path, getenv
 from sys import exit as sys_exit
