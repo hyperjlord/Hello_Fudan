@@ -297,7 +297,7 @@ def get_account():
             new.write(tmp)
         print("账号已保存在目录下account.txt，请注意文件安全，不要放在明显位置\n\n建议拉个快捷方式到桌面")
 
-    return uid, psw
+    return uid, psw, smtp_host, from_email, to_email,smtp_pswd
 
 
 if __name__ == '__main__':
