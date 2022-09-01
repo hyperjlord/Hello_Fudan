@@ -275,7 +275,7 @@ def get_account():
     smtp_pswd = getenv("SMTP_PASSWORD")
     if uid != None and psw != None:
         print("从环境变量中获取了用户名和密码！")
-        return uid, psw, smtp_host, from_email, to_email, smtp_password
+        return uid, psw, smtp_host, from_email, to_email, smtp_pswd
     print("\n\n请仔细阅读以下日志！！\n请仔细阅读以下日志！！！！\n请仔细阅读以下日志！！！！！！\n\n")
     if os_path.exists("account.txt"):
         print("读取账号中……")
