@@ -134,7 +134,7 @@ class Fudan:
         try:
             smtp = smtplib.SMTP()
             smtp.connect(self.smtp_host, 25)
-            smtp.login(self.from_email, self.smtp_pswd, self.smtp_) # 邮箱地址, smtp密码
+            smtp.login(self.from_email, self.smtp_pswd) # 邮箱地址, smtp密码
             message = MIMEText(content, 'plain', 'utf-8')
             message['From'] = self.from_email
             message['To'] = self.to_email
